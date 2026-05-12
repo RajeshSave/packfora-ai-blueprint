@@ -9,9 +9,10 @@ st.set_page_config(
     page_title="Packfora · AI Blueprint",
     page_icon="📦",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
 )
 
+st.sidebar.markdown("## Filters")
 # ── Brand Colours ──────────────────────────────────────────────────────────────
 ORANGE   = "#F05A28"
 DARK     = "#1A1A2E"
