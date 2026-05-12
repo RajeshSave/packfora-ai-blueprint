@@ -78,7 +78,7 @@ st.markdown(f"""
     margin: 1rem 0 1.2rem;
     font-size: 0.88rem;
     line-height: 1.7;
-    color: #CBD5E0;
+    color: #FFFFFF;
   }}
   .vision-card .vision-title {{ font-size:1rem; font-weight:700; color:{ORANGE}; margin-bottom:6px; letter-spacing:0.04em; }}
 
@@ -573,9 +573,9 @@ with tab1:
             return colours.get(val,"")
 
         styled = display.style\
-            .applymap(style_priority, subset=["Priority"])\
-            .applymap(style_opcost, subset=["Op Cost"])\
-            .applymap(style_phase, subset=["Phase"])\
+    .map(style_priority, subset=["Priority"])\
+    .map(style_opcost, subset=["Op Cost"])\
+    .map(style_phase, subset=["Phase"])\
             .set_properties(**{
                 "background-color":"rgba(255,255,255,0.02)",
                 "color":"#E2E8F0",
