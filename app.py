@@ -9,10 +9,9 @@ st.set_page_config(
     page_title="Packfora · AI Blueprint",
     page_icon="📦",
     layout="wide",
-    initial_sidebar_state="auto",
+    initial_sidebar_state="expanded",
 )
 
-st.sidebar.markdown("## Filters")
 # ── Brand Colours ──────────────────────────────────────────────────────────────
 ORANGE   = "#F05A28"
 DARK     = "#1A1A2E"
@@ -40,7 +39,7 @@ st.markdown(f"""
   }}
   .main .block-container {{ padding-top: 0rem; padding-bottom: 2rem; max-width: 100%; }}
 
-  /* Sidebar */
+  /* Sidebar — FIX: do not hide header so toggle button stays visible */
   section[data-testid="stSidebar"] {{
     background: linear-gradient(180deg, {DARK2} 0%, {DARK} 100%);
     border-right: 1px solid rgba(240,90,40,0.2);
@@ -48,7 +47,10 @@ st.markdown(f"""
     visibility: visible !important;
     opacity: 1 !important;
   }}
-  section[data-testid="stSidebar"] * {{ color: {WHITE} !important; visibility: visible !important; }}
+  section[data-testid="stSidebar"] * {{
+    color: {WHITE} !important;
+    visibility: visible !important;
+  }}
   section[data-testid="stSidebar"] .stSelectbox label,
   section[data-testid="stSidebar"] .stMultiSelect label {{ color: {ORANGE} !important; font-weight: 600; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; }}
 
@@ -72,7 +74,7 @@ st.markdown(f"""
   .header-title {{ font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; font-weight: 700; color: {WHITE}; line-height:1.1; }}
   .header-sub {{ font-size: 0.82rem; color: {ORANGE}; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; margin-top:2px; }}
 
-  /* Vision card */
+  /* Vision card — FIX: brighter text colour */
   .vision-card {{
     background: linear-gradient(135deg, rgba(240,90,40,0.12) 0%, rgba(15,52,96,0.4) 100%);
     border: 1px solid rgba(240,90,40,0.35);
@@ -165,8 +167,8 @@ st.markdown(f"""
   ::-webkit-scrollbar-track {{ background:rgba(255,255,255,0.04); border-radius:3px; }}
   ::-webkit-scrollbar-thumb {{ background:{ORANGE}; border-radius:3px; }}
 
-  /* Hide Streamlit branding */
-  #MainMenu, footer, header {{ visibility:hidden; }}
+  /* FIX: only hide footer and deploy button, NOT header or MainMenu */
+  footer {{ visibility:hidden; }}
   .stDeployButton {{ display:none; }}
 
   /* Sidebar section labels */
@@ -198,7 +200,7 @@ st.markdown(f"""
   .tp-5::before {{ background:{TEAL}; }}
   .tp-label {{ font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:4px; }}
   .tp-title {{ font-size:1rem; font-weight:700; color:{WHITE}; margin-bottom:6px; }}
-  .tp-desc  {{ font-size:0.82rem; color:{MUTED}; line-height:1.6; }}
+  .tp-desc  {{ font-size:0.82rem; color:#FFFFFF; line-height:1.6; }}
   .tp-tags  {{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }}
   .tp-tag   {{ font-size:0.68rem; padding:2px 8px; border-radius:20px; background:rgba(255,255,255,0.07); color:{MUTED}; }}
 </style>
@@ -320,7 +322,7 @@ DATA = [
        Priority="High", Effort="Medium", Phase=2,
        ROI="Cuts contract review time from days to minutes across multi-country operations"),
 
-  # MAXMOLD (PRODUCT LINE)
+  # MAXMOLD
   dict(Function="MaxMold (Mould Management)", Process="Predictive Mould Maintenance",
        Application="ML analyses mould cycle counts, temperature, pressure and dimensional data to predict maintenance needs before failures occur — core intelligence for Packfora's MaxMold product.",
        AI_Types="ML", Dev_Cost="High", Op_Cost="Zero",
@@ -339,7 +341,6 @@ DATA = [
        Cost_Note="One-time batch digitisation; low ongoing token cost",
        Priority="High", Effort="Medium", Phase=1,
        ROI="Unlocks historical data for MaxMold analytics; accelerates client onboarding"),
-
 
   # SALES & MARKETING
   dict(Function="Sales & Marketing", Process="Client Lead Scoring",
@@ -373,7 +374,7 @@ DATA = [
        AI_Types="ML", Dev_Cost="Medium", Op_Cost="Zero",
        Cost_Note="Zero inference cost; weekly batch forecasts",
        Priority="Critical", Effort="Medium", Phase=1,
-       ROI="Critical for managing growth at ₹35.5Cr revenue with 65% CAGR"),
+       ROI="Critical for managing growth at Rs 35.5Cr revenue with 65% CAGR"),
   dict(Function="Finance", Process="Invoice Processing & AP Automation",
        Application="OCR + Gen AI extracts vendor invoice data; workflow automation routes approvals and posts to accounting system — zero manual touch for standard invoices.",
        AI_Types="OCR + Gen AI + Automation", Dev_Cost="Medium", Op_Cost="Low",
@@ -418,7 +419,6 @@ df = pd.DataFrame(DATA)
 
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
-    # Logo
     st.markdown(f"""
     <div style="text-align:center; padding:1rem 0 0.5rem;">
       <img src="https://packfora.com/assets/img/packfora-white-logo.png"
@@ -458,10 +458,10 @@ with st.sidebar:
     <div style="font-size:0.7rem; color:{MUTED}; line-height:1.6;">
       <b style="color:{ORANGE};">Dev Cost</b> is one-time investment<br>
       <b style="color:{ORANGE};">Op Cost</b> is ongoing per-use spend<br>
-      <span style="color:#68D391">■</span> Zero — pure ML models<br>
-      <span style="color:#F6E05E">■</span> Low — OCR + selective tokens<br>
-      <span style="color:{ORANGE}">■</span> Medium — moderate Gen AI<br>
-      <span style="color:#FC8181">■</span> High — heavy Gen AI volume
+      <span style="color:#68D391">&#9632;</span> Zero — pure ML models<br>
+      <span style="color:#F6E05E">&#9632;</span> Low — OCR + selective tokens<br>
+      <span style="color:{ORANGE}">&#9632;</span> Medium — moderate Gen AI<br>
+      <span style="color:#FC8181">&#9632;</span> High — heavy Gen AI volume
     </div>
     """, unsafe_allow_html=True)
 
@@ -525,11 +525,10 @@ tab1, tab2, tab3, tab4 = st.tabs([
 
 # ─────────────────────────── TAB 1: MAIN TABLE ──────────────────────────────
 with tab1:
-    # Metric cards
-    zero_cnt  = len(filtered[filtered["Op_Cost"]=="Zero"])
-    crit_cnt  = len(filtered[filtered["Priority"]=="Critical"])
-    hybrid_cnt= len(filtered[filtered["AI_Types"].str.contains("Hybrid",na=False)])
-    ph1_cnt   = len(filtered[filtered["Phase"]==1])
+    zero_cnt   = len(filtered[filtered["Op_Cost"]=="Zero"])
+    crit_cnt   = len(filtered[filtered["Priority"]=="Critical"])
+    hybrid_cnt = len(filtered[filtered["AI_Types"].str.contains("Hybrid",na=False)])
+    ph1_cnt    = len(filtered[filtered["Phase"]==1])
 
     st.markdown(f"""
     <div class="metric-row">
@@ -544,12 +543,6 @@ with tab1:
     if filtered.empty:
         st.info("No use cases match the selected filters. Adjust the sidebar filters.")
     else:
-        # Colour helpers
-        priority_emoji = {"Critical":"🔴","High":"🟢","Medium":"🟡","Low":"⚪"}
-        opcost_colour  = {"Zero":"#68D391","Low":"#F6E05E","Medium":"#F6AD55","High":"#FC8181"}
-        phase_label    = {1:"Phase 1 · 2025","2":"Phase 2 · 2026–27","3":"Phase 3 · 2027–28"}
-        ph_col         = {1:"#68D391",2:"#F6E05E",3:"#FC8181"}
-
         display = filtered[[
             "Function","Process","Application","AI_Types",
             "Dev_Cost","Op_Cost","Priority","Phase","ROI"
@@ -560,7 +553,7 @@ with tab1:
             "Dev Cost","Op Cost","Priority","Phase","ROI / Business Value"
         ]
 
-        # Style with pandas
+        # FIX: use .map() instead of deprecated .applymap()
         def style_priority(val):
             colours = {"Critical":"color:#FC8181;font-weight:700",
                        "High":"color:#68D391;font-weight:700",
@@ -577,9 +570,9 @@ with tab1:
             return colours.get(val,"")
 
         styled = display.style\
-    .map(style_priority, subset=["Priority"])\
-    .map(style_opcost, subset=["Op Cost"])\
-    .map(style_phase, subset=["Phase"])\
+            .map(style_priority, subset=["Priority"])\
+            .map(style_opcost, subset=["Op Cost"])\
+            .map(style_phase, subset=["Phase"])\
             .set_properties(**{
                 "background-color":"rgba(255,255,255,0.02)",
                 "color":"#E2E8F0",
@@ -604,19 +597,18 @@ with tab1:
             height=min(60 + len(display)*55, 620),
             hide_index=True,
             column_config={
-                "Function":            st.column_config.TextColumn("Function", width=130),
-                "Use Case / Process":  st.column_config.TextColumn("Use Case", width=160),
+                "Function":              st.column_config.TextColumn("Function", width=130),
+                "Use Case / Process":    st.column_config.TextColumn("Use Case", width=160),
                 "AI Application Detail": st.column_config.TextColumn("AI Application", width=280),
-                "AI Type(s)":          st.column_config.TextColumn("AI Type(s)", width=140),
-                "Dev Cost":            st.column_config.TextColumn("Dev Cost", width=80),
-                "Op Cost":             st.column_config.TextColumn("Op Cost", width=80),
-                "Priority":            st.column_config.TextColumn("Priority", width=80),
-                "Phase":               st.column_config.NumberColumn("Phase", width=60, format="%d"),
-                "ROI / Business Value":st.column_config.TextColumn("ROI / Business Value", width=280),
+                "AI Type(s)":            st.column_config.TextColumn("AI Type(s)", width=140),
+                "Dev Cost":              st.column_config.TextColumn("Dev Cost", width=80),
+                "Op Cost":               st.column_config.TextColumn("Op Cost", width=80),
+                "Priority":              st.column_config.TextColumn("Priority", width=80),
+                "Phase":                 st.column_config.NumberColumn("Phase", width=60, format="%d"),
+                "ROI / Business Value":  st.column_config.TextColumn("ROI / Business Value", width=280),
             }
         )
 
-        # Download
         csv = filtered.to_csv(index=False).encode("utf-8")
         st.download_button("⬇ Download Full Blueprint (CSV)", csv, "packfora_ai_blueprint.csv", "text/csv")
 
@@ -706,7 +698,6 @@ with tab2:
             st.plotly_chart(fig4, use_container_width=True)
 
         st.markdown('<div class="section-hdr">AI Type Distribution Across Functions</div>', unsafe_allow_html=True)
-
         ai_types_flat = []
         for _, row in filtered.iterrows():
             for t in ["ML","Gen AI","Hybrid","OCR + Gen AI","Automation","NLP"]:
@@ -739,47 +730,47 @@ with tab3:
 
     phases = [
         dict(num=1, cls="tp-1", years="2025 · Phase 1", label_col="#68D391",
-             title="Foundation & Quick Wins — 'Prove the Value'",
+             title="Foundation & Quick Wins — Prove the Value",
              desc="""Deploy zero-cost ML models and automation for immediate ROI. Focus on Packfora's core pain points:
              <b>resume screening</b> for packaging talent, <b>lead scoring</b> to focus senior partner time,
              <b>invoice automation</b> across 21 countries, <b>Design-to-Value ML</b> (core IP digitisation),
-             and <b>client proposal Gen AI</b>. MaxMold's OCR digitisation of mould specs begins.
-             Estimated investment: <b>₹80–120 lakhs</b>. Expected savings/value unlock: <b>₹200–300 lakhs</b>.""",
+             and <b>client proposal Gen AI</b>. MaxMold OCR digitisation of mould specs begins.
+             Estimated investment: <b>Rs 80-120 lakhs</b>. Expected savings/value unlock: <b>Rs 200-300 lakhs</b>.""",
              tags=["ML Attrition Model","Lead Scoring ML","Invoice OCR Automation","Design-to-Value ML",
                    "Proposal Gen AI","Resume Screening","Revenue Forecasting ML","Mould Spec OCR"]),
         dict(num=2, cls="tp-2", years="2026 · Phase 2 (Part 1)", label_col="#F6E05E",
-             title="Intelligence Layer — 'Scale the Smarts'",
-             desc="""Deploy the ML + Hybrid models that leverage Phase 1 data assets. <b>MaxMold Predictive Maintenance</b>
+             title="Intelligence Layer — Scale the Smarts",
+             desc="""Deploy ML + Hybrid models that leverage Phase 1 data assets. <b>MaxMold Predictive Maintenance</b>
              becomes a monetisable SaaS feature. <b>Sustainability Roadmap Gen AI</b> digitises Packfora's highest-value
              consulting deliverable. <b>Knowledge Management RAG</b> makes 1000+ years of expertise searchable.
              <b>Supplier Risk Scoring ML</b> powers procurement advisory. <b>L&D Recommendation ML</b> supports
              School of Packaging.
-             Estimated investment: <b>₹150–200 lakhs</b>. Expected revenue uplift: <b>₹400–600 lakhs</b>.""",
+             Estimated investment: <b>Rs 150-200 lakhs</b>. Expected revenue uplift: <b>Rs 400-600 lakhs</b>.""",
              tags=["MaxMold Predictive Maintenance","Sustainability Roadmap AI","Knowledge RAG System",
                    "Supplier Risk ML","Contract Extraction OCR","Client Churn ML","Packaging Innovation NLP",
                    "L&D Recommendation ML"]),
         dict(num=3, cls="tp-3", years="2027 · Phase 2 (Part 2)", label_col="#F6AD55",
-             title="Client-Facing AI — 'Differentiate the Offering'",
+             title="Client-Facing AI — Differentiate the Offering",
              desc="""Launch <b>client-facing AI tools</b> as part of Packfora's consulting deliverables.
              A <b>Packaging Intelligence Portal</b> (RAG + ML) gives clients live access to insights.
-             <b>Demand & material cost forecasting</b> becomes a subscription analytics product.
+             <b>Demand and material cost forecasting</b> becomes a subscription analytics product.
              <b>HR Policy chatbot</b> and <b>IT helpdesk automation</b> mature the internal operations.
              <b>Price optimisation ML</b> added to procurement advisory. Begin building Packfora AI platform brand.
-             Estimated investment: <b>₹200–250 lakhs</b>. New recurring revenue potential: <b>₹500 lakhs+</b>.""",
+             Estimated investment: <b>Rs 200-250 lakhs</b>. New recurring revenue potential: <b>Rs 500 lakhs+</b>.""",
              tags=["Client Intelligence Portal","Material Price Forecasting","Shipment Delay Prediction",
                    "HR Chatbot","IT Helpdesk AI","Competitive Intelligence NLP","Financial Narrative Gen AI"]),
-        dict(num=4, cls="tp-4", years="2027–28 · Phase 3", label_col="#B794F4",
-             title="AI-Native Products — 'Monetise the Intelligence'",
+        dict(num=4, cls="tp-4", years="2027-28 · Phase 3", label_col="#B794F4",
+             title="AI-Native Products — Monetise the Intelligence",
              desc="""Packfora's AI capabilities become <b>standalone product offerings</b>.
              MaxMold evolves into a full <b>AI-powered SaaS platform</b> for packaging manufacturers globally.
              A <b>Packaging Intelligence SaaS</b> product (design, sustainability, procurement analytics)
              is launched for brand owners. The <b>School of Packaging</b> becomes an AI-personalised digital
              learning platform. Cybersecurity ML protects the growing IP portfolio.
-             Estimated investment: <b>₹300–400 lakhs</b>. SaaS ARR target: <b>₹1,000 lakhs+</b>.""",
+             Estimated investment: <b>Rs 300-400 lakhs</b>. SaaS ARR target: <b>Rs 1,000 lakhs+</b>.""",
              tags=["MaxMold SaaS AI Platform","Packaging Intelligence SaaS","School of Packaging AI",
                    "Cybersecurity ML","Full Automation Suite","AI Consulting Product Line"]),
         dict(num=5, cls="tp-5", years="2028+ · Vision Horizon", label_col="#81E6D9",
-             title="AI-First Enterprise — 'Packaging Intelligence Global Leader'",
+             title="AI-First Enterprise — Packaging Intelligence Global Leader",
              desc="""Packfora operates as a <b>fully AI-augmented consulting and product company</b>.
              Every consultant is amplified by AI — briefing intelligence, design optimisation,
              sustainability scoring, procurement analytics and client reporting are all AI-assisted.
@@ -801,7 +792,6 @@ with tab3:
         </div>
         """, unsafe_allow_html=True)
 
-    # Gantt-style chart
     st.markdown('<div class="section-hdr" style="margin-top:1.5rem">Implementation Timeline Gantt</div>', unsafe_allow_html=True)
     gantt_data = [
         dict(Task="ML Attrition & Lead Scoring", Start="2025-01-01", Finish="2025-04-01", Phase="Phase 1"),
@@ -853,7 +843,7 @@ with tab4:
             <div>
               <div style="font-size:0.68rem;font-weight:700;color:{ORANGE};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">{row['Function']}</div>
               <div style="font-size:1rem;font-weight:700;color:{WHITE};margin-bottom:4px;">{row['Process']}</div>
-              <div style="font-size:0.81rem;color:#CBD5E0;line-height:1.6;max-width:680px;">{row['Application']}</div>
+              <div style="font-size:0.81rem;color:#FFFFFF;line-height:1.6;max-width:680px;">{row['Application']}</div>
             </div>
             <div style="text-align:right;min-width:100px;">
               <div style="font-size:0.68rem;color:{MUTED};text-transform:uppercase;">AI Type</div>
@@ -864,7 +854,7 @@ with tab4:
           </div>
           <div style="margin-top:10px;padding:8px 12px;background:rgba(240,90,40,0.1);border-radius:8px;border-left:3px solid {ORANGE};">
             <span style="font-size:0.7rem;font-weight:700;color:{ORANGE};text-transform:uppercase;">ROI Rationale · </span>
-            <span style="font-size:0.8rem;color:#CBD5E0;">{row['ROI']}</span>
+            <span style="font-size:0.8rem;color:#FFFFFF;">{row['ROI']}</span>
           </div>
         </div>
         """, unsafe_allow_html=True)
@@ -873,12 +863,12 @@ with tab4:
     <div style="margin-top:1.5rem;padding:1rem 1.2rem;background:rgba(240,90,40,0.08);
          border:1px solid rgba(240,90,40,0.25);border-radius:12px;">
       <div style="font-size:0.85rem;font-weight:700;color:{ORANGE};margin-bottom:6px;">💡 Implementation Recommendation for Packfora</div>
-      <div style="font-size:0.82rem;color:#CBD5E0;line-height:1.7;">
-        Begin with the <b>6 Critical Phase 1 use cases</b> above. Five of them (ML Attrition, Lead Scoring, Revenue Forecasting, 
+      <div style="font-size:0.82rem;color:#FFFFFF;line-height:1.7;">
+        Begin with the <b>6 Critical Phase 1 use cases</b> above. Five of them (ML Attrition, Lead Scoring, Revenue Forecasting,
         Expense Detection, Supplier Risk) carry <b>zero operational cost</b> — pure ML models trained once and run forever.
         The Design-to-Value ML directly digitises Packfora's core proprietary methodology and creates immediate IP value.
-        Collectively these can be built in <b>6–9 months</b> with a focused data + engineering team, 
-        generating <b>₹200–400 lakhs</b> in cost savings and value unlock before Phase 2 begins.
+        Collectively these can be built in <b>6-9 months</b> with a focused data + engineering team,
+        generating <b>Rs 200-400 lakhs</b> in cost savings and value unlock before Phase 2 begins.
       </div>
     </div>
     """, unsafe_allow_html=True)
