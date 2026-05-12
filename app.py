@@ -43,8 +43,11 @@ st.markdown(f"""
   section[data-testid="stSidebar"] {{
     background: linear-gradient(180deg, {DARK2} 0%, {DARK} 100%);
     border-right: 1px solid rgba(240,90,40,0.2);
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }}
-  section[data-testid="stSidebar"] * {{ color: {WHITE} !important; }}
+  section[data-testid="stSidebar"] * {{ color: {WHITE} !important; visibility: visible !important; }}
   section[data-testid="stSidebar"] .stSelectbox label,
   section[data-testid="stSidebar"] .stMultiSelect label {{ color: {ORANGE} !important; font-weight: 600; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; }}
 
