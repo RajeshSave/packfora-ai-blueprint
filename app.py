@@ -427,6 +427,7 @@ with st.sidebar:
       <div id="logo-fallback" style="display:none; font-family:'Space Grotesk',sans-serif;
            font-size:1.3rem; font-weight:700; color:{ORANGE};">PACKFORA</div>
       <div style="font-size:0.62rem; color:{MUTED}; letter-spacing:0.12em; text-transform:uppercase; margin-top:4px;">
+        Make Your Packaging Shine
       </div>
     </div>
     <hr style="border:none; border-top:1px solid rgba(240,90,40,0.2); margin:0.8rem 0;"/>
@@ -515,11 +516,12 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ── Tabs ───────────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📋  AI Use Case Blueprint",
     "📊  Analytics & Insights",
     "🗓️  3-Year Implementation Runway",
     "💡  Priority Quick Wins",
+    "📖  AI Glossary",
 ])
 
 # ─────────────────────────── TAB 1: MAIN TABLE ──────────────────────────────
@@ -871,3 +873,148 @@ with tab4:
       </div>
     </div>
     """, unsafe_allow_html=True)
+
+# ─────────────────────────── TAB 5: GLOSSARY ────────────────────────────────
+with tab5:
+    st.markdown('<div class="section-hdr">AI Terminology Glossary — Plain English for Packfora</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="font-size:0.85rem;color:#FFFFFF;margin-bottom:1.2rem;line-height:1.7;">
+      Every AI term used in this Blueprint is explained below in plain English, with a specific example
+      of how it applies to Packfora's business. No technical background needed.
+    </div>
+    """, unsafe_allow_html=True)
+
+    GLOSSARY = [
+        dict(term="Machine Learning (ML)", icon="🤖", category="Core AI",
+             plain="A computer that learns patterns from past data and uses them to make predictions or decisions — without being told the rules explicitly.",
+             packfora="Packfora feeds historical hiring data into an ML model. It learns what makes a great packaging consultant and automatically scores future CVs — no manual shortlisting needed.",
+             cost_note="Once trained, ML models run at near-zero cost — no ongoing fees per use."),
+        dict(term="Generative AI (Gen AI)", icon="✍️", category="Core AI",
+             plain="AI that can create new content — text, documents, summaries, proposals — by understanding context and generating human-quality output.",
+             packfora="Packfora types in a client brief (e.g. 'sustainable FMCG packaging for India'). Gen AI writes a full structured strategy framework in minutes instead of 2 weeks.",
+             cost_note="Charges per 'token' (roughly per word processed). More text = higher cost."),
+        dict(term="Large Language Model (LLM)", icon="🧠", category="Core AI",
+             plain="The engine behind Generative AI. A massive AI model trained on billions of pages of text that understands and generates language at human level. GPT-4 and Claude are examples.",
+             packfora="When Packfora's proposal Gen AI writes a client document, it is powered by an LLM underneath. Packfora doesn't build this — it uses existing LLMs via API.",
+             cost_note="API usage charged per token. Hybrid models reduce LLM calls to save cost."),
+        dict(term="OCR (Optical Character Recognition)", icon="📄", category="Document AI",
+             plain="Technology that reads text from scanned documents, PDFs, or images and converts it into editable, searchable digital data — like a very fast, accurate typist.",
+             packfora="Packfora receives hundreds of supplier invoices as scanned PDFs. OCR reads every invoice automatically and extracts vendor name, amount, tax, and line items into the ERP — zero manual entry.",
+             cost_note="OCR processing is very cheap — near-zero cost per document."),
+        dict(term="RAG (Retrieval-Augmented Generation)", icon="🔍", category="Document AI",
+             plain="A technique where AI first searches through a company's own documents to find relevant information, then generates an answer based on that — rather than guessing from general knowledge.",
+             packfora="A Packfora consultant asks: 'What packaging solutions did we use for pharma blister packs in 2022?' The RAG system searches all past case studies and project files, then writes a precise answer.",
+             cost_note="Embedding (indexing documents) is one-time cost. Query tokens charged per question."),
+        dict(term="NLP (Natural Language Processing)", icon="💬", category="Language AI",
+             plain="AI that understands, reads and interprets human language — emails, documents, social media, reports — and extracts meaning, sentiment or categories from it.",
+             packfora="Packfora uses NLP to automatically read thousands of packaging regulatory updates, patents and competitor press releases — and classify which ones are relevant to which client categories.",
+             cost_note="NLP classifiers are ML-based — near-zero inference cost once trained."),
+        dict(term="Sentiment Analysis", icon="😊", category="Language AI",
+             plain="AI that reads text (emails, reviews, feedback) and detects the emotional tone — positive, negative, neutral — or urgency level.",
+             packfora="Packfora's support team receives client emails. Sentiment AI automatically flags messages with negative or urgent tone, pushing them to the top of the queue before a human even reads them.",
+             cost_note="Lightweight classifier — near-zero cost at scale."),
+        dict(term="Predictive ML / Forecasting", icon="📈", category="ML Techniques",
+             plain="ML models that analyse historical patterns to predict what will happen in the future — sales, demand, prices, failures, churn.",
+             packfora="Packfora feeds 3 years of packaging material price data into a forecasting model. It predicts resin and paper prices 3 months ahead, helping procurement clients buy at the right time.",
+             cost_note="Batch forecasts — run weekly or monthly. Zero operational token cost."),
+        dict(term="Prescriptive AI", icon="🎯", category="ML Techniques",
+             plain="Goes one step beyond prediction — it not only tells you what will happen, but recommends the best action to take in response.",
+             packfora="Packfora's Design-to-Value ML doesn't just score packaging options — it prescribes the optimal material, thickness and structure combination for a client's cost, weight and sustainability targets.",
+             cost_note="Pure ML — zero ongoing cost after model training."),
+        dict(term="Anomaly Detection", icon="🚨", category="ML Techniques",
+             plain="AI that learns what 'normal' looks like in your data, and automatically flags anything unusual — suspicious transactions, equipment irregularities, security threats.",
+             packfora="Packfora's finance team processes expenses across 21 countries. Anomaly detection ML flags unusual claims — duplicate invoices, out-of-policy amounts, suspicious timing — before payment.",
+             cost_note="ML-based — zero operational cost once deployed."),
+        dict(term="Classification (ML)", icon="🏷️", category="ML Techniques",
+             plain="AI that sorts items into categories automatically — spam vs not spam, high risk vs low risk, relevant vs irrelevant.",
+             packfora="Packfora classifies every inbound client enquiry into the right service category (Design-to-Value, Sustainability, Procurement, MaxMold) and routes it to the right expert team automatically.",
+             cost_note="Lightweight ML classifier — near-zero cost."),
+        dict(term="Computer Vision (CV)", icon="👁️", category="ML Techniques",
+             plain="AI that can 'see' and interpret images or video — detecting objects, defects, patterns or reading information from visual inputs.",
+             packfora="On a packaging production line, Computer Vision ML inspects every unit in real time — spotting print defects, seal failures, label misalignment — faster and more accurately than any human inspector.",
+             cost_note="Runs on-device or on edge hardware — very low inference cost at scale."),
+        dict(term="Hybrid AI Model", icon="🔀", category="Architecture",
+             plain="A smart combination of ML and Gen AI — using ML for the heavy analytical work (free) and only calling Gen AI for the final human-readable output (paid). Dramatically reduces token costs.",
+             packfora="Packfora's Sustainability Roadmap: ML scores 50 packaging options on carbon and recyclability (free). Only the final narrative roadmap document is written by Gen AI (small token cost). Result: 80% cheaper than pure Gen AI.",
+             cost_note="Key cost strategy — use ML where possible, Gen AI only for the last mile."),
+        dict(term="Workflow Automation", icon="⚙️", category="Architecture",
+             plain="Software that automatically moves data, triggers actions, sends notifications and routes approvals between systems — removing manual, repetitive steps from a process.",
+             packfora="When a supplier invoice is received, automation extracts the data (OCR), checks it against the PO (ML), routes it for approval (workflow), and posts it to the accounting system — all without a human touching it.",
+             cost_note="Zero per-run cost once set up. Platform licence is the only spend."),
+        dict(term="API (Application Programming Interface)", icon="🔌", category="Architecture",
+             plain="A connector that lets two software systems talk to each other. When Packfora's app calls an AI model, it does so through an API — like a waiter taking your order to the kitchen.",
+             packfora="Packfora's proposal generation tool sends a brief to Claude or GPT-4 via API, receives the generated proposal back, and displays it to the consultant — all in seconds.",
+             cost_note="API usage is the source of 'token cost' — charged per call based on text volume."),
+        dict(term="Token", icon="🪙", category="Cost Concepts",
+             plain="The unit Gen AI providers use to measure and charge for text. Roughly 1 token = 0.75 words. Both the input (your prompt) and the output (AI's response) consume tokens.",
+             packfora="A Packfora client brief of 500 words costs roughly 650 tokens to send to Gen AI. A 1,000-word proposal response costs ~1,300 tokens. At $0.003 per 1K tokens, one proposal costs under Rs 0.30.",
+             cost_note="This is why high-volume Gen AI (chatbots, content) has medium-high op cost, while ML has zero."),
+        dict(term="Embedding", icon="🗺️", category="Cost Concepts",
+             plain="Converting documents or text into a mathematical representation (a list of numbers) that AI can search through extremely fast. The foundation of RAG knowledge search.",
+             packfora="Packfora's 100+ client case studies are converted into embeddings and stored. When a consultant asks a question, the system finds the most relevant case study in milliseconds by comparing embeddings.",
+             cost_note="One-time cost to embed documents. Very cheap — fractions of a penny per page."),
+        dict(term="SaaS (Software as a Service)", icon="☁️", category="Business Terms",
+             plain="Software delivered over the internet on a subscription basis — no installation, no servers to manage. You pay monthly or annually for access.",
+             packfora="MaxMold is Packfora's path to SaaS — packaging manufacturers would pay a monthly subscription to access predictive maintenance AI, mould analytics and lifecycle dashboards online.",
+             cost_note="SaaS revenue is recurring — the most valuable business model for Packfora's AI products."),
+        dict(term="IoT (Internet of Things)", icon="📡", category="Data Sources",
+             plain="Physical devices (sensors, machines, equipment) connected to the internet that continuously send data — temperatures, pressures, cycle counts, locations.",
+             packfora="MaxMold attaches sensors to packaging moulds. These IoT sensors stream temperature, pressure and cycle count data to Packfora's ML model, which predicts when maintenance is needed before failure.",
+             cost_note="IoT infrastructure is a one-time hardware cost. Data streaming is very cheap."),
+        dict(term="CAGR (Compound Annual Growth Rate)", icon="📊", category="Business Terms",
+             plain="The steady yearly growth rate of a business over a period of time — if a company grows from Rs 10Cr to Rs 27Cr in 3 years, the CAGR is roughly 40%.",
+             packfora="Packfora is growing at 65% CAGR — one of the fastest growth rates in consulting. AI is critical to sustaining this without proportionally scaling headcount and costs.",
+             cost_note="At 65% CAGR, Packfora doubles revenue every ~15 months. AI must scale operations faster than hiring can."),
+    ]
+
+    # Group by category
+    categories = list(dict.fromkeys(g["category"] for g in GLOSSARY))
+
+    for cat in categories:
+        terms = [g for g in GLOSSARY if g["category"] == cat]
+        cat_icons = {"Core AI":"🧩","Document AI":"📂","Language AI":"💬",
+                     "ML Techniques":"⚡","Architecture":"🏗️",
+                     "Cost Concepts":"💰","Business Terms":"📊","Data Sources":"📡"}
+        st.markdown(f"""
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;
+             letter-spacing:0.1em;color:{ORANGE};margin:1.4rem 0 0.6rem;
+             padding-bottom:6px;border-bottom:1px solid rgba(240,90,40,0.25);">
+          {cat_icons.get(cat,'📌')} {cat}
+        </div>
+        """, unsafe_allow_html=True)
+
+        for g in terms:
+            st.markdown(f"""
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);
+                 border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.7rem;">
+
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <span style="font-size:1.2rem;">{g['icon']}</span>
+                <span style="font-size:1rem;font-weight:700;color:{WHITE};">{g['term']}</span>
+              </div>
+
+              <div style="font-size:0.8rem;font-weight:600;color:{ORANGE};
+                   text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">
+                What it means
+              </div>
+              <div style="font-size:0.84rem;color:#FFFFFF;line-height:1.65;margin-bottom:10px;">
+                {g['plain']}
+              </div>
+
+              <div style="font-size:0.8rem;font-weight:600;color:#68D391;
+                   text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">
+                📦 How Packfora uses it
+              </div>
+              <div style="font-size:0.84rem;color:#FFFFFF;line-height:1.65;margin-bottom:10px;">
+                {g['packfora']}
+              </div>
+
+              <div style="background:rgba(240,90,40,0.08);border-left:3px solid {ORANGE};
+                   border-radius:0 6px 6px 0;padding:6px 10px;">
+                <span style="font-size:0.72rem;font-weight:700;color:{ORANGE};
+                     text-transform:uppercase;">💰 Cost note · </span>
+                <span style="font-size:0.78rem;color:#FFFFFF;">{g['cost_note']}</span>
+              </div>
+
+            </div>
+            """, unsafe_allow_html=True)
