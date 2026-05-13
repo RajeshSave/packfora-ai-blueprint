@@ -516,12 +516,14 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ── Tabs ───────────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "📋  AI Use Case Blueprint",
     "📊  Analytics & Insights",
     "🗓️  3-Year Implementation Runway",
     "💡  Priority Quick Wins",
     "📖  AI Glossary",
+    "💰  ROI Calculator",
+    "🧮  Cost Estimator",
 ])
 
 # ─────────────────────────── TAB 1: MAIN TABLE ──────────────────────────────
@@ -1018,3 +1020,340 @@ with tab5:
 
             </div>
             """, unsafe_allow_html=True)
+
+# ─────────────────────────── TAB 6: ROI CALCULATOR ──────────────────────────
+with tab6:
+    st.markdown('<div class="section-hdr">ROI Calculator — What Will AI Save Packfora?</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="font-size:0.85rem;color:#FFFFFF;margin-bottom:1.2rem;line-height:1.7;">
+      Adjust the sliders below to match Packfora's current operations.
+      The calculator instantly shows estimated savings, value unlock and payback period for each AI initiative.
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── Inputs ──
+    st.markdown(f'<div style="font-size:0.75rem;font-weight:700;color:{ORANGE};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">📥 Enter Packfora\'s Current Numbers</div>', unsafe_allow_html=True)
+
+    col_a, col_b, col_c = st.columns(3)
+    with col_a:
+        employees      = st.slider("Total Employees", 10, 300, 60, 5)
+        avg_salary_lpa = st.slider("Avg Salary (Rs Lakhs/year)", 5, 40, 15, 1)
+        proposals_pm   = st.slider("Client Proposals per Month", 1, 50, 10, 1)
+    with col_b:
+        invoices_pm    = st.slider("Invoices Processed per Month", 10, 1000, 150, 10)
+        candidates_pm  = st.slider("CVs Screened per Month", 5, 200, 40, 5)
+        support_qpm    = st.slider("HR / IT Support Queries per Month", 10, 500, 100, 10)
+    with col_c:
+        annual_revenue = st.slider("Annual Revenue (Rs Crores)", 5, 200, 35, 5)
+        clients        = st.slider("Active Clients", 5, 200, 50, 5)
+        contracts_pm   = st.slider("Contracts Reviewed per Month", 1, 100, 15, 1)
+
+    st.markdown("<hr style='border:none;border-top:1px solid rgba(255,255,255,0.08);margin:1rem 0'/>", unsafe_allow_html=True)
+
+    # ── Calculations ──
+    hrs_per_proposal   = 24   # hours a consultant spends on one proposal
+    hrs_per_cv         = 0.5  # hours HR spends per CV
+    hrs_per_invoice    = 0.4  # hours finance spends per invoice
+    hrs_per_query      = 0.25 # hours spent per support query
+    hrs_per_contract   = 3.0  # hours spent reviewing one contract
+    hourly_rate        = (avg_salary_lpa * 100000) / (260 * 8)  # Rs per hour
+
+    ai_proposal_saving_pct  = 0.70  # Gen AI reduces proposal time by 70%
+    ai_cv_saving_pct        = 0.60  # ML reduces CV screening time by 60%
+    ai_invoice_saving_pct   = 0.80  # OCR automation reduces invoice time by 80%
+    ai_query_saving_pct     = 0.55  # Chatbot deflects 55% of queries
+    ai_contract_saving_pct  = 0.65  # Gen AI reduces contract review by 65%
+
+    proposal_saving_lpa  = proposals_pm * 12 * hrs_per_proposal * ai_proposal_saving_pct * hourly_rate / 100000
+    cv_saving_lpa        = candidates_pm * 12 * hrs_per_cv * ai_cv_saving_pct * hourly_rate / 100000
+    invoice_saving_lpa   = invoices_pm * 12 * hrs_per_invoice * ai_invoice_saving_pct * hourly_rate / 100000
+    query_saving_lpa     = support_qpm * 12 * hrs_per_query * ai_query_saving_pct * hourly_rate / 100000
+    contract_saving_lpa  = contracts_pm * 12 * hrs_per_contract * ai_contract_saving_pct * hourly_rate / 100000
+
+    attrition_saving_lpa = (employees * 0.12) * avg_salary_lpa * 0.30  # 12% attrition, AI reduces by 30%
+    lead_uplift_lpa      = annual_revenue * 0.08 * 100  # 8% revenue uplift from better lead scoring (in lakhs)
+    dtv_saving_lpa       = clients * 30 * 0.02          # Design-to-Value: Rs 30L avg client saving, Packfora captures 2%
+
+    total_saving_lpa = (proposal_saving_lpa + cv_saving_lpa + invoice_saving_lpa +
+                        query_saving_lpa + contract_saving_lpa + attrition_saving_lpa +
+                        lead_uplift_lpa + dtv_saving_lpa)
+
+    dev_cost_lpa    = 120   # Phase 1 development cost estimate
+    payback_months  = (dev_cost_lpa / (total_saving_lpa / 12)) if total_saving_lpa > 0 else 999
+    roi_pct         = ((total_saving_lpa - dev_cost_lpa) / dev_cost_lpa * 100) if dev_cost_lpa > 0 else 0
+
+    # ── Summary Metrics ──
+    st.markdown(f"""
+    <div class="metric-row">
+      <div class="metric-card"><div class="m-val" style="color:#68D391">Rs {total_saving_lpa:.0f}L</div><div class="m-lbl">Total Annual Value Unlock</div></div>
+      <div class="metric-card"><div class="m-val" style="color:{ORANGE}">Rs {dev_cost_lpa}L</div><div class="m-lbl">Est. Phase 1 Dev Cost</div></div>
+      <div class="metric-card"><div class="m-val" style="color:#F6E05E">{payback_months:.1f} mo</div><div class="m-lbl">Payback Period</div></div>
+      <div class="metric-card"><div class="m-val" style="color:#B794F4">{roi_pct:.0f}%</div><div class="m-lbl">First-Year ROI</div></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── Breakdown Chart ──
+    st.markdown('<div class="section-hdr">Savings Breakdown by AI Initiative</div>', unsafe_allow_html=True)
+
+    breakdown = pd.DataFrame({
+        "Initiative": [
+            "Proposal Gen AI","CV Screening ML","Invoice OCR Automation",
+            "HR/IT Chatbot","Contract Review AI","Attrition Reduction ML",
+            "Lead Scoring Revenue Uplift","Design-to-Value ML"
+        ],
+        "Annual Value (Rs Lakhs)": [
+            round(proposal_saving_lpa,1), round(cv_saving_lpa,1),
+            round(invoice_saving_lpa,1), round(query_saving_lpa,1),
+            round(contract_saving_lpa,1), round(attrition_saving_lpa,1),
+            round(lead_uplift_lpa,1), round(dtv_saving_lpa,1)
+        ],
+        "AI Type": ["Gen AI","ML","OCR+Auto","Gen AI","Gen AI","ML","ML","ML"]
+    }).sort_values("Annual Value (Rs Lakhs)", ascending=True)
+
+    ai_colours2 = {"Gen AI":PURPLE,"ML":BLUE,"OCR+Auto":TEAL}
+    fig_roi = px.bar(breakdown, x="Annual Value (Rs Lakhs)", y="Initiative",
+                     orientation="h", color="AI Type",
+                     color_discrete_map=ai_colours2, template="plotly_dark",
+                     text="Annual Value (Rs Lakhs)")
+    fig_roi.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=0,r=40,t=10,b=0), height=340,
+        xaxis=dict(gridcolor="rgba(255,255,255,0.05)", title="Rs Lakhs / year"),
+        yaxis=dict(gridcolor="rgba(0,0,0,0)"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, font=dict(size=11)),
+        font=dict(family="Outfit", color=WHITE),
+    )
+    fig_roi.update_traces(marker_line_width=0, textposition="outside",
+                          textfont=dict(size=11, color=WHITE))
+    st.plotly_chart(fig_roi, use_container_width=True)
+
+    # ── Cumulative ROI over 3 years ──
+    st.markdown('<div class="section-hdr">Cumulative Investment vs Value Unlock — 3 Year View</div>', unsafe_allow_html=True)
+
+    years      = ["Year 1\n(Phase 1)", "Year 2\n(Phase 2)", "Year 3\n(Phase 3)"]
+    invest     = [dev_cost_lpa, dev_cost_lpa + 175, dev_cost_lpa + 175 + 225]
+    value      = [total_saving_lpa * 0.5, total_saving_lpa * 1.4, total_saving_lpa * 2.6]
+    cum_invest = [invest[0], invest[0]+invest[1], invest[0]+invest[1]+invest[2]]
+
+    fig_cum = go.Figure()
+    fig_cum.add_trace(go.Bar(name="Cumulative Investment (Rs L)", x=years, y=cum_invest,
+                             marker_color=RED, opacity=0.75))
+    fig_cum.add_trace(go.Bar(name="Cumulative Value Unlock (Rs L)", x=years, y=value,
+                             marker_color=GREEN, opacity=0.85))
+    fig_cum.add_trace(go.Scatter(name="Net Benefit (Rs L)", x=years,
+                                 y=[v-i for v,i in zip(value, cum_invest)],
+                                 mode="lines+markers+text",
+                                 line=dict(color=ORANGE, width=3),
+                                 marker=dict(size=10),
+                                 text=[f"Rs {v-i:.0f}L" for v,i in zip(value, cum_invest)],
+                                 textposition="top center",
+                                 textfont=dict(color=ORANGE, size=12)))
+    fig_cum.update_layout(
+        barmode="group", template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0.1)",
+        margin=dict(l=0,r=0,t=10,b=0), height=320,
+        xaxis=dict(gridcolor="rgba(0,0,0,0)"),
+        yaxis=dict(gridcolor="rgba(255,255,255,0.05)", title="Rs Lakhs"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, font=dict(size=11)),
+        font=dict(family="Outfit", color=WHITE),
+    )
+    st.plotly_chart(fig_cum, use_container_width=True)
+
+    st.markdown(f"""
+    <div style="padding:0.9rem 1.2rem;background:rgba(56,161,105,0.08);
+         border:1px solid rgba(56,161,105,0.25);border-radius:12px;margin-top:0.5rem;">
+      <div style="font-size:0.82rem;font-weight:700;color:#68D391;margin-bottom:4px;">
+        📌 Key Insight
+      </div>
+      <div style="font-size:0.82rem;color:#FFFFFF;line-height:1.7;">
+        Based on your inputs, Packfora can unlock <b>Rs {total_saving_lpa:.0f} Lakhs</b> of annual value
+        with a Phase 1 investment of approximately <b>Rs {dev_cost_lpa} Lakhs</b> —
+        paying back in just <b>{payback_months:.1f} months</b>.
+        By Year 3, cumulative net benefit is projected at
+        <b>Rs {(value[2] - cum_invest[2]):.0f} Lakhs</b>.
+        Five of the eight initiatives run at <b>zero operational cost</b> after deployment.
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ─────────────────────────── TAB 7: COST ESTIMATOR ──────────────────────────
+with tab7:
+    st.markdown('<div class="section-hdr">Cost Estimator — What Will AI Cost to Build & Run?</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="font-size:0.85rem;color:#FFFFFF;margin-bottom:1.2rem;line-height:1.7;">
+      Adjust the sliders to reflect Packfora's usage volumes. The estimator breaks down
+      <b>Development Cost</b> (one-time) and <b>Operational Cost</b> (monthly, ongoing) for every AI type.
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f'<div style="font-size:0.75rem;font-weight:700;color:{ORANGE};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">📥 Usage Volume Inputs</div>', unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        genai_docs_pm   = st.slider("Gen AI documents generated/month\n(proposals, JDs, reports)", 1, 500, 50, 5)
+        genai_queries_pm= st.slider("Chatbot / RAG queries per month", 10, 2000, 200, 10)
+        ocr_docs_pm     = st.slider("Documents processed via OCR/month\n(invoices, contracts, POs)", 10, 2000, 200, 10)
+    with c2:
+        ml_models       = st.slider("Number of ML models to build", 1, 15, 6, 1)
+        automation_flows= st.slider("Workflow automations to set up", 1, 20, 5, 1)
+        team_size_dev   = st.slider("Internal dev team size\n(data engineers + developers)", 0, 10, 2, 1)
+    with c3:
+        token_cost_per1k= st.slider("Gen AI token cost per 1K tokens (USD cents)", 1, 30, 3, 1)
+        avg_doc_tokens  = st.slider("Avg tokens per Gen AI document (words x 1.3)", 500, 5000, 1500, 100)
+        usd_inr         = st.slider("USD to INR rate", 80, 90, 84, 1)
+
+    st.markdown("<hr style='border:none;border-top:1px solid rgba(255,255,255,0.08);margin:1rem 0'/>", unsafe_allow_html=True)
+
+    # ── Dev Cost Calculations ──
+    ml_dev_cost_per_model  = 8    # Rs Lakhs per ML model (data prep + training + deployment)
+    auto_dev_cost_per_flow = 2    # Rs Lakhs per automation flow
+    ocr_dev_cost           = 10   # Rs Lakhs one-time OCR pipeline setup
+    genai_dev_cost         = 15   # Rs Lakhs RAG + Gen AI integration setup
+    team_cost_pm           = team_size_dev * avg_salary_lpa * 100000 / 12 / 100000  # Rs Lakhs/month
+
+    total_ml_dev    = ml_models * ml_dev_cost_per_model
+    total_auto_dev  = automation_flows * auto_dev_cost_per_flow
+    total_ocr_dev   = ocr_dev_cost
+    total_genai_dev = genai_dev_cost
+    total_dev_cost  = total_ml_dev + total_auto_dev + total_ocr_dev + total_genai_dev
+
+    # ── Op Cost Calculations ──
+    # Gen AI: docs + queries
+    genai_tokens_pm     = (genai_docs_pm * avg_doc_tokens + genai_queries_pm * 500) / 1000
+    genai_op_usd_pm     = genai_tokens_pm * token_cost_per1k / 100
+    genai_op_inr_pm     = genai_op_usd_pm * usd_inr / 100000  # Rs Lakhs
+
+    # OCR: near zero
+    ocr_op_inr_pm       = ocr_docs_pm * 0.001 * usd_inr / 100000  # fractions
+
+    # ML: near zero (compute only)
+    ml_op_inr_pm        = ml_models * 0.5 * usd_inr / 100000
+
+    # Automation: platform licence
+    auto_op_inr_pm      = automation_flows * 0.3  # Rs 30K per flow per month approx
+
+    total_op_pm         = genai_op_inr_pm + ocr_op_inr_pm + ml_op_inr_pm + auto_op_inr_pm + team_cost_pm
+    total_op_annual     = total_op_pm * 12
+
+    # ── Summary Metrics ──
+    st.markdown(f"""
+    <div class="metric-row">
+      <div class="metric-card"><div class="m-val" style="color:{ORANGE}">Rs {total_dev_cost:.0f}L</div><div class="m-lbl">Total Dev Cost (One-Time)</div></div>
+      <div class="metric-card"><div class="m-val" style="color:#F6E05E">Rs {total_op_pm:.1f}L</div><div class="m-lbl">Monthly Op Cost (Ongoing)</div></div>
+      <div class="metric-card"><div class="m-val" style="color:#FC8181">Rs {total_op_annual:.0f}L</div><div class="m-lbl">Annual Op Cost</div></div>
+      <div class="metric-card"><div class="m-val" style="color:#68D391">Rs {total_dev_cost + total_op_annual:.0f}L</div><div class="m-lbl">Total Year 1 AI Spend</div></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── Dev Cost Breakdown ──
+    col_d1, col_d2 = st.columns(2)
+
+    with col_d1:
+        st.markdown('<div class="section-hdr">Development Cost Breakdown (One-Time)</div>', unsafe_allow_html=True)
+        dev_df = pd.DataFrame({
+            "AI Component": ["ML Models", "Workflow Automation", "OCR Pipeline", "Gen AI / RAG Integration"],
+            "Cost (Rs Lakhs)": [total_ml_dev, total_auto_dev, total_ocr_dev, total_genai_dev],
+            "Notes": [
+                f"{ml_models} models × Rs {ml_dev_cost_per_model}L each",
+                f"{automation_flows} flows × Rs {auto_dev_cost_per_flow}L each",
+                "One-time pipeline + validation setup",
+                "RAG indexing + LLM integration + UI"
+            ]
+        })
+        fig_dev = px.pie(dev_df, values="Cost (Rs Lakhs)", names="AI Component",
+                         color="AI Component",
+                         color_discrete_map={
+                             "ML Models": BLUE,
+                             "Workflow Automation": AMBER,
+                             "OCR Pipeline": TEAL,
+                             "Gen AI / RAG Integration": PURPLE
+                         },
+                         hole=0.5, template="plotly_dark")
+        fig_dev.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            margin=dict(l=0,r=0,t=10,b=0), height=280,
+            legend=dict(font=dict(size=10, color=WHITE)),
+            font=dict(family="Outfit", color=WHITE),
+        )
+        fig_dev.update_traces(textfont_size=11)
+        st.plotly_chart(fig_dev, use_container_width=True)
+
+        st.dataframe(dev_df[["AI Component","Cost (Rs Lakhs)","Notes"]],
+                     hide_index=True, use_container_width=True)
+
+    with col_d2:
+        st.markdown('<div class="section-hdr">Monthly Operational Cost Breakdown</div>', unsafe_allow_html=True)
+        op_df = pd.DataFrame({
+            "AI Component": ["Gen AI Tokens", "OCR Processing", "ML Compute", "Automation Platform", "Dev Team"],
+            "Monthly Cost (Rs Lakhs)": [
+                round(genai_op_inr_pm, 2),
+                round(ocr_op_inr_pm, 3),
+                round(ml_op_inr_pm, 2),
+                round(auto_op_inr_pm, 2),
+                round(team_cost_pm, 2)
+            ],
+            "Cost Type": ["Token-based","Near Zero","Near Zero","Licence","Fixed"]
+        })
+        fig_op = px.bar(op_df, x="AI Component", y="Monthly Cost (Rs Lakhs)",
+                        color="Cost Type",
+                        color_discrete_map={
+                            "Token-based": PURPLE,
+                            "Near Zero": GREEN,
+                            "Licence": AMBER,
+                            "Fixed": BLUE
+                        },
+                        template="plotly_dark", text="Monthly Cost (Rs Lakhs)")
+        fig_op.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+            margin=dict(l=0,r=0,t=10,b=0), height=280,
+            xaxis=dict(gridcolor="rgba(0,0,0,0)", title=None),
+            yaxis=dict(gridcolor="rgba(255,255,255,0.05)"),
+            legend=dict(font=dict(size=10)),
+            font=dict(family="Outfit", color=WHITE),
+        )
+        fig_op.update_traces(marker_line_width=0, textposition="outside",
+                             textfont=dict(size=10, color=WHITE))
+        st.plotly_chart(fig_op, use_container_width=True)
+
+        st.dataframe(op_df[["AI Component","Monthly Cost (Rs Lakhs)","Cost Type"]],
+                     hide_index=True, use_container_width=True)
+
+    # ── Gen AI Token Detail ──
+    st.markdown('<div class="section-hdr">Gen AI Token Cost Deep Dive</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:1rem;">
+      <div class="metric-card" style="flex:1;min-width:150px;">
+        <div class="m-val" style="font-size:1.4rem;color:{PURPLE}">{genai_docs_pm * avg_doc_tokens / 1000:.0f}K</div>
+        <div class="m-lbl">Tokens/month (documents)</div>
+      </div>
+      <div class="metric-card" style="flex:1;min-width:150px;">
+        <div class="m-val" style="font-size:1.4rem;color:{PURPLE}">{genai_queries_pm * 500 / 1000:.0f}K</div>
+        <div class="m-lbl">Tokens/month (chatbot)</div>
+      </div>
+      <div class="metric-card" style="flex:1;min-width:150px;">
+        <div class="m-val" style="font-size:1.4rem;color:{ORANGE}">${genai_op_usd_pm:.1f}</div>
+        <div class="m-lbl">Monthly Gen AI cost (USD)</div>
+      </div>
+      <div class="metric-card" style="flex:1;min-width:150px;">
+        <div class="m-val" style="font-size:1.4rem;color:#68D391">Rs {genai_op_inr_pm*100000:.0f}</div>
+        <div class="m-lbl">Monthly Gen AI cost (INR)</div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div style="padding:0.9rem 1.2rem;background:rgba(240,90,40,0.08);
+         border:1px solid rgba(240,90,40,0.25);border-radius:12px;">
+      <div style="font-size:0.82rem;font-weight:700;color:{ORANGE};margin-bottom:6px;">
+        💡 Cost Optimisation Tips for Packfora
+      </div>
+      <div style="font-size:0.82rem;color:#FFFFFF;line-height:1.8;">
+        ① <b>Use Hybrid models</b> — let ML do classification and retrieval (free), call Gen AI only for final document generation. Reduces token cost by up to 70%.<br/>
+        ② <b>Cache frequent queries</b> — if 30% of chatbot queries are repeated FAQs, cache the answers and serve them free.<br/>
+        ③ <b>Batch Gen AI calls</b> — generate proposals and reports in off-peak batches rather than real-time to use cheaper batch API pricing.<br/>
+        ④ <b>ML first, always</b> — every use case where ML alone can solve it (attrition, lead scoring, anomaly detection) saves 100% of token cost.<br/>
+        ⑤ <b>Token budgeting</b> — set a monthly token budget per use case and monitor via dashboards. Small prompt engineering improvements can cut cost by 20-30%.
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
