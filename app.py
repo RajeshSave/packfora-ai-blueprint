@@ -427,7 +427,7 @@ with st.sidebar:
       <div id="logo-fallback" style="display:none; font-family:'Space Grotesk',sans-serif;
            font-size:1.3rem; font-weight:700; color:{ORANGE};">PACKFORA</div>
       <div style="font-size:0.62rem; color:{MUTED}; letter-spacing:0.12em; text-transform:uppercase; margin-top:4px;">
-        Make Your Packaging Shine
+        
       </div>
     </div>
     <hr style="border:none; border-top:1px solid rgba(240,90,40,0.2); margin:0.8rem 0;"/>
