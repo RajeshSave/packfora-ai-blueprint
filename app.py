@@ -516,7 +516,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ── Tabs ───────────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
     "📋  AI Use Case Blueprint",
     "📊  Analytics & Insights",
     "🗓️  3-Year Implementation Runway",
@@ -524,6 +524,8 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "📖  AI Glossary",
     "💰  ROI Calculator",
     "🧮  Cost Estimator",
+    "🗺️  Build Your Roadmap",
+    "🎯  AI Maturity Meter",
 ])
 
 # ─────────────────────────── TAB 1: MAIN TABLE ──────────────────────────────
@@ -1354,6 +1356,416 @@ with tab7:
         ③ <b>Batch Gen AI calls</b> — generate proposals and reports in off-peak batches rather than real-time to use cheaper batch API pricing.<br/>
         ④ <b>ML first, always</b> — every use case where ML alone can solve it (attrition, lead scoring, anomaly detection) saves 100% of token cost.<br/>
         ⑤ <b>Token budgeting</b> — set a monthly token budget per use case and monitor via dashboards. Small prompt engineering improvements can cut cost by 20-30%.
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ─────────────────────────── TAB 8: BUILD YOUR ROADMAP ──────────────────────
+with tab8:
+    st.markdown('<div class="section-hdr">🗺️ Build Your Own AI Roadmap — Drag & Assign Use Cases to Phases</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="font-size:0.85rem;color:#FFFFFF;margin-bottom:1rem;line-height:1.7;">
+      Select use cases from the list below and assign them to <b>Phase 1</b>, <b>Phase 2</b> or <b>Phase 3</b>
+      using the dropdowns. Your custom roadmap, total cost and timeline will update instantly.
+      This is your personalised AI implementation plan for Packfora.
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Initialise session state for roadmap
+    if "roadmap" not in st.session_state:
+        st.session_state.roadmap = {row["Process"]: row["Phase"] for _, row in df.iterrows()}
+
+    # ── Use case assignment table ──
+    st.markdown(f'<div style="font-size:0.75rem;font-weight:700;color:{ORANGE};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.6rem;">📌 Assign Each Use Case to a Phase</div>', unsafe_allow_html=True)
+
+    # Group by function for cleaner layout
+    for fn in sorted(df["Function"].unique()):
+        fn_rows = df[df["Function"] == fn]
+        with st.expander(f"  {fn}  ({len(fn_rows)} use cases)", expanded=False):
+            for _, row in fn_rows.iterrows():
+                proc = row["Process"]
+                col_l, col_r = st.columns([3, 1])
+                with col_l:
+                    op_col = {"Zero":"#68D391","Low":"#F6E05E","Medium":"#F6AD55","High":"#FC8181"}.get(row["Op_Cost"],"#A0AEC0")
+                    pr_col = {"Critical":"#FC8181","High":"#68D391","Medium":"#F6E05E","Low":"#A0AEC0"}.get(row["Priority"],"#A0AEC0")
+                    st.markdown(f"""
+                    <div style="padding:6px 0;">
+                      <div style="font-size:0.85rem;font-weight:600;color:{WHITE};">{proc}</div>
+                      <div style="font-size:0.72rem;color:{MUTED};margin-top:2px;">
+                        {row['AI_Types']} &nbsp;·&nbsp;
+                        <span style="color:{pr_col}">● {row['Priority']}</span> &nbsp;·&nbsp;
+                        Op Cost: <span style="color:{op_col}">{row['Op_Cost']}</span>
+                      </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                with col_r:
+                    current = st.session_state.roadmap.get(proc, row["Phase"])
+                    new_phase = st.selectbox(
+                        "Phase",
+                        options=[1, 2, 3],
+                        index=current - 1,
+                        key=f"phase_{proc}",
+                        format_func=lambda x: f"Phase {x}",
+                        label_visibility="collapsed"
+                    )
+                    st.session_state.roadmap[proc] = new_phase
+
+    st.markdown("<hr style='border:none;border-top:1px solid rgba(255,255,255,0.08);margin:1.2rem 0'/>", unsafe_allow_html=True)
+
+    # ── Build custom roadmap dataframe ──
+    custom_df = df.copy()
+    custom_df["Custom_Phase"] = custom_df["Process"].map(st.session_state.roadmap)
+
+    ph1 = custom_df[custom_df["Custom_Phase"] == 1]
+    ph2 = custom_df[custom_df["Custom_Phase"] == 2]
+    ph3 = custom_df[custom_df["Custom_Phase"] == 3]
+
+    # ── Phase summary cards ──
+    dev_map  = {"Low": 5, "Medium": 10, "High": 20}
+    op_map   = {"Zero": 0, "Low": 1, "Medium": 3, "High": 6}
+
+    def phase_cost(phase_df):
+        return sum(dev_map.get(r["Dev_Cost"], 10) for _, r in phase_df.iterrows())
+    def phase_op(phase_df):
+        return sum(op_map.get(r["Op_Cost"], 0) for _, r in phase_df.iterrows())
+
+    ph_labels = {1: ("2025", "#68D391"), 2: ("2026–27", "#F6E05E"), 3: ("2027–28", "#FC8181")}
+
+    st.markdown(f'<div class="section-hdr">Your Custom Roadmap Summary</div>', unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns(3)
+    for col, ph_df, ph_num in zip([col1, col2, col3], [ph1, ph2, ph3], [1, 2, 3]):
+        yr, col_hex = ph_labels[ph_num]
+        with col:
+            critical = len(ph_df[ph_df["Priority"] == "Critical"])
+            zero_op  = len(ph_df[ph_df["Op_Cost"] == "Zero"])
+            st.markdown(f"""
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);
+                 border-top:3px solid {col_hex};border-radius:12px;padding:1rem;text-align:center;">
+              <div style="font-size:0.7rem;font-weight:700;color:{col_hex};text-transform:uppercase;
+                   letter-spacing:0.1em;margin-bottom:6px;">Phase {ph_num} · {yr}</div>
+              <div style="font-size:2rem;font-weight:700;color:{WHITE};">{len(ph_df)}</div>
+              <div style="font-size:0.72rem;color:{MUTED};margin-bottom:10px;">Use Cases</div>
+              <div style="font-size:0.78rem;color:{WHITE};line-height:1.8;">
+                Est. Dev Cost: <b style="color:{col_hex}">Rs {phase_cost(ph_df)}L</b><br/>
+                Monthly Op Cost: <b style="color:{col_hex}">Rs {phase_op(ph_df)}L</b><br/>
+                Critical Items: <b style="color:#FC8181">{critical}</b><br/>
+                Zero Op Cost: <b style="color:#68D391">{zero_op}</b>
+              </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    # ── Visual Gantt of custom roadmap ──
+    st.markdown(f'<div class="section-hdr" style="margin-top:1.2rem;">Your Custom Timeline</div>', unsafe_allow_html=True)
+
+    phase_dates = {
+        1: ("2025-01-01", "2025-12-31"),
+        2: ("2026-01-01", "2027-06-30"),
+        3: ("2027-07-01", "2028-12-31"),
+    }
+    phase_cols = {1: GREEN, 2: AMBER, 3: RED}
+
+    gantt_custom = []
+    for _, row in custom_df.iterrows():
+        ph = row["Custom_Phase"]
+        s, e = phase_dates[ph]
+        gantt_custom.append(dict(
+            Task=row["Process"],
+            Start=s, Finish=e,
+            Phase=f"Phase {ph}",
+            Function=row["Function"]
+        ))
+
+    gcdf = pd.DataFrame(gantt_custom).sort_values("Phase")
+    fig_gc = px.timeline(gcdf, x_start="Start", x_end="Finish",
+                         y="Task", color="Phase",
+                         color_discrete_map={
+                             "Phase 1": GREEN,
+                             "Phase 2": AMBER,
+                             "Phase 3": RED
+                         },
+                         hover_data={"Function": True},
+                         template="plotly_dark")
+    fig_gc.update_yaxes(autorange="reversed")
+    fig_gc.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0.1)",
+        margin=dict(l=0, r=0, t=10, b=0), height=max(400, len(custom_df) * 22),
+        xaxis=dict(gridcolor="rgba(255,255,255,0.08)", title=None),
+        yaxis=dict(gridcolor="rgba(255,255,255,0.05)", tickfont=dict(size=9)),
+        legend=dict(orientation="h", yanchor="bottom", y=1.01, font=dict(size=11)),
+        font=dict(family="Outfit", color=WHITE),
+    )
+    st.plotly_chart(fig_gc, use_container_width=True)
+
+    # ── Download custom roadmap ──
+    export = custom_df[["Function","Process","AI_Types","Priority","Dev_Cost","Op_Cost","Custom_Phase","ROI"]].copy()
+    export.columns = ["Function","Use Case","AI Type","Priority","Dev Cost","Op Cost","Your Phase","ROI"]
+    csv_custom = export.to_csv(index=False).encode("utf-8")
+    st.download_button("⬇ Download Your Custom Roadmap (CSV)", csv_custom,
+                       "packfora_custom_roadmap.csv", "text/csv")
+
+
+# ─────────────────────────── TAB 9: AI MATURITY METER ───────────────────────
+with tab9:
+    st.markdown('<div class="section-hdr">🎯 AI Maturity Meter — Where is Packfora Today & Where Will It Be?</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="font-size:0.85rem;color:#FFFFFF;margin-bottom:1rem;line-height:1.7;">
+      Rate Packfora's <b>current AI maturity</b> across 8 dimensions using the sliders below (1 = Not started, 10 = World class).
+      The meter shows your current state, projected state after each phase, and the gap to close.
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── Maturity dimension inputs ──
+    st.markdown(f'<div style="font-size:0.75rem;font-weight:700;color:{ORANGE};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.6rem;">📊 Rate Packfora\'s Current Maturity (1–10)</div>', unsafe_allow_html=True)
+
+    dimensions = [
+        ("Data & Infrastructure",    "Quality and availability of data pipelines, cloud infra, data storage"),
+        ("ML & Predictive Analytics","Ability to build and deploy ML models for prediction and prescriptions"),
+        ("Gen AI & LLM Usage",       "Use of Generative AI for documents, proposals, chatbots and content"),
+        ("Process Automation",       "Workflow automation across HR, Finance, Operations and Supply Chain"),
+        ("OCR & Document AI",        "Ability to process and extract data from documents automatically"),
+        ("Talent & AI Skills",       "In-house team capability in data science, ML engineering and AI tools"),
+        ("Client-Facing AI",         "AI embedded in client deliverables — portals, reports, recommendations"),
+        ("AI Governance & Ethics",   "Policies, oversight and responsible AI practices in place"),
+    ]
+
+    col_m1, col_m2 = st.columns(2)
+    current_scores = {}
+    for i, (dim, desc) in enumerate(dimensions):
+        col = col_m1 if i % 2 == 0 else col_m2
+        with col:
+            st.markdown(f"""
+            <div style="font-size:0.78rem;font-weight:600;color:{WHITE};margin-bottom:2px;">{dim}</div>
+            <div style="font-size:0.68rem;color:{MUTED};margin-bottom:4px;">{desc}</div>
+            """, unsafe_allow_html=True)
+            score = st.slider(dim, 1, 10, 2,
+                              key=f"mat_{dim}", label_visibility="collapsed")
+            current_scores[dim] = score
+
+    st.markdown("<hr style='border:none;border-top:1px solid rgba(255,255,255,0.08);margin:1.2rem 0'/>", unsafe_allow_html=True)
+
+    # ── Projected scores per phase ──
+    # Phase improvements are additive on top of current
+    phase_boosts = {
+        "Data & Infrastructure":    [2, 3, 2],
+        "ML & Predictive Analytics":[3, 2, 2],
+        "Gen AI & LLM Usage":       [2, 3, 2],
+        "Process Automation":       [3, 2, 1],
+        "OCR & Document AI":        [3, 2, 1],
+        "Talent & AI Skills":       [1, 2, 3],
+        "Client-Facing AI":         [1, 3, 3],
+        "AI Governance & Ethics":   [1, 2, 3],
+    }
+
+    dims       = [d[0] for d in dimensions]
+    current    = [current_scores[d] for d in dims]
+    after_ph1  = [min(10, current_scores[d] + phase_boosts[d][0]) for d in dims]
+    after_ph2  = [min(10, current_scores[d] + phase_boosts[d][0] + phase_boosts[d][1]) for d in dims]
+    after_ph3  = [min(10, current_scores[d] + sum(phase_boosts[d])) for d in dims]
+
+    overall_now  = round(sum(current) / len(current), 1)
+    overall_ph1  = round(sum(after_ph1) / len(after_ph1), 1)
+    overall_ph2  = round(sum(after_ph2) / len(after_ph2), 1)
+    overall_ph3  = round(sum(after_ph3) / len(after_ph3), 1)
+
+    # ── Overall score cards ──
+    maturity_label = lambda s: (
+        "🔴 Beginner" if s < 3 else
+        "🟡 Developing" if s < 5 else
+        "🟠 Intermediate" if s < 7 else
+        "🟢 Advanced" if s < 9 else
+        "⭐ World Class"
+    )
+
+    st.markdown(f"""
+    <div class="metric-row">
+      <div class="metric-card">
+        <div class="m-val" style="color:#FC8181">{overall_now}/10</div>
+        <div class="m-lbl">Current Maturity</div>
+        <div style="font-size:0.72rem;color:{MUTED};margin-top:4px;">{maturity_label(overall_now)}</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-val" style="color:#68D391">{overall_ph1}/10</div>
+        <div class="m-lbl">After Phase 1 (2025)</div>
+        <div style="font-size:0.72rem;color:{MUTED};margin-top:4px;">{maturity_label(overall_ph1)}</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-val" style="color:#F6E05E">{overall_ph2}/10</div>
+        <div class="m-lbl">After Phase 2 (2027)</div>
+        <div style="font-size:0.72rem;color:{MUTED};margin-top:4px;">{maturity_label(overall_ph2)}</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-val" style="color:{ORANGE}">{overall_ph3}/10</div>
+        <div class="m-lbl">After Phase 3 (2028)</div>
+        <div style="font-size:0.72rem;color:{MUTED};margin-top:4px;">{maturity_label(overall_ph3)}</div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── 1. Speedometer Gauge ──
+    st.markdown('<div class="section-hdr">① Speedometer — Overall AI Maturity Score</div>', unsafe_allow_html=True)
+
+    fig_gauge = go.Figure()
+    phases_gauge = [
+        ("Current",    overall_now,  "#FC8181"),
+        ("After Ph 1", overall_ph1,  "#68D391"),
+        ("After Ph 2", overall_ph2,  "#F6E05E"),
+        ("After Ph 3", overall_ph3,  ORANGE),
+    ]
+    cols_g = st.columns(4)
+    for i, (label, score, colour) in enumerate(phases_gauge):
+        fig_g = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=score,
+            title={"text": label, "font": {"size": 13, "color": WHITE, "family": "Outfit"}},
+            number={"font": {"size": 28, "color": colour, "family": "Outfit"},
+                    "suffix": "/10"},
+            gauge={
+                "axis": {"range": [0, 10], "tickcolor": MUTED,
+                         "tickfont": {"size": 9, "color": MUTED}},
+                "bar": {"color": colour},
+                "bgcolor": "rgba(255,255,255,0.05)",
+                "bordercolor": "rgba(255,255,255,0.1)",
+                "steps": [
+                    {"range": [0, 3],  "color": "rgba(229,62,62,0.15)"},
+                    {"range": [3, 6],  "color": "rgba(214,158,46,0.15)"},
+                    {"range": [6, 8],  "color": "rgba(49,130,206,0.15)"},
+                    {"range": [8, 10], "color": "rgba(56,161,105,0.15)"},
+                ],
+                "threshold": {
+                    "line": {"color": WHITE, "width": 2},
+                    "thickness": 0.75,
+                    "value": score
+                }
+            }
+        ))
+        fig_g.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            margin=dict(l=10, r=10, t=40, b=10),
+            height=200,
+            font=dict(family="Outfit", color=WHITE),
+        )
+        cols_g[i].plotly_chart(fig_g, use_container_width=True)
+
+    # ── 2. Radar / Spider Chart ──
+    st.markdown('<div class="section-hdr">② Radar Chart — Maturity Across All Dimensions</div>', unsafe_allow_html=True)
+
+    fig_radar = go.Figure()
+    radar_data = [
+        ("Current",     current,   "#FC8181", "dot"),
+        ("After Ph 1",  after_ph1, "#68D391", "dash"),
+        ("After Ph 2",  after_ph2, "#F6E05E", "dashdot"),
+        ("After Ph 3",  after_ph3, ORANGE,    "solid"),
+    ]
+    short_dims = ["Data &\nInfra", "ML &\nPredictive", "Gen AI\n& LLM",
+                  "Process\nAuto", "OCR &\nDoc AI", "Talent\n& Skills",
+                  "Client\nFacing", "AI\nGovernance"]
+
+    for label, scores, colour, dash in radar_data:
+        fig_radar.add_trace(go.Scatterpolar(
+            r=scores + [scores[0]],
+            theta=short_dims + [short_dims[0]],
+            fill="toself" if label == "After Ph 3" else "none",
+            fillcolor=f"rgba(240,90,40,0.08)" if label == "After Ph 3" else "rgba(0,0,0,0)",
+            name=label,
+            line=dict(color=colour, width=2.5, dash=dash),
+            marker=dict(size=6, color=colour),
+        ))
+
+    fig_radar.update_layout(
+        polar=dict(
+            bgcolor="rgba(255,255,255,0.02)",
+            radialaxis=dict(
+                visible=True, range=[0, 10],
+                tickfont=dict(size=9, color=MUTED),
+                gridcolor="rgba(255,255,255,0.1)",
+                linecolor="rgba(255,255,255,0.1)",
+            ),
+            angularaxis=dict(
+                tickfont=dict(size=10, color=WHITE),
+                gridcolor="rgba(255,255,255,0.1)",
+                linecolor="rgba(255,255,255,0.15)",
+            ),
+        ),
+        paper_bgcolor="rgba(0,0,0,0)",
+        legend=dict(orientation="h", yanchor="bottom", y=-0.15,
+                    font=dict(size=11, color=WHITE)),
+        margin=dict(l=60, r=60, t=20, b=60),
+        height=440,
+        font=dict(family="Outfit", color=WHITE),
+        showlegend=True,
+    )
+    st.plotly_chart(fig_radar, use_container_width=True)
+
+    # ── 3. Progress Bars per Dimension ──
+    st.markdown('<div class="section-hdr">③ Progress Bars — Dimension-by-Dimension Journey</div>', unsafe_allow_html=True)
+
+    bar_colours = {
+        "Current":    "#FC8181",
+        "After Ph 1": "#68D391",
+        "After Ph 2": "#F6E05E",
+        "After Ph 3": ORANGE,
+    }
+
+    for dim, desc in dimensions:
+        c_score  = current_scores[dim]
+        p1_score = min(10, c_score + phase_boosts[dim][0])
+        p2_score = min(10, p1_score + phase_boosts[dim][1])
+        p3_score = min(10, p2_score + phase_boosts[dim][2])
+        gap      = p3_score - c_score
+
+        st.markdown(f"""
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
+             border-radius:10px;padding:0.9rem 1.1rem;margin-bottom:0.6rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div>
+              <div style="font-size:0.85rem;font-weight:600;color:{WHITE};">{dim}</div>
+              <div style="font-size:0.7rem;color:{MUTED};">{desc}</div>
+            </div>
+            <div style="text-align:right;font-size:0.72rem;color:{ORANGE};font-weight:600;">
+              Gap to close: +{gap} points
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+        """, unsafe_allow_html=True)
+
+        for label, score, colour in [
+            ("Current",    c_score,  "#FC8181"),
+            ("After Ph 1", p1_score, "#68D391"),
+            ("After Ph 2", p2_score, "#F6E05E"),
+            ("After Ph 3", p3_score, ORANGE),
+        ]:
+            pct = score * 10
+            st.markdown(f"""
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="font-size:0.68rem;color:{MUTED};width:80px;flex-shrink:0;">{label}</div>
+              <div style="flex:1;background:rgba(255,255,255,0.06);border-radius:4px;height:8px;">
+                <div style="width:{pct}%;background:{colour};height:100%;border-radius:4px;
+                     transition:width 0.5s ease;"></div>
+              </div>
+              <div style="font-size:0.72rem;font-weight:600;color:{colour};width:30px;text-align:right;">{score}/10</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("</div></div>", unsafe_allow_html=True)
+
+    # ── Maturity insight ──
+    gap_to_world_class = round(8.5 - overall_now, 1)
+    st.markdown(f"""
+    <div style="margin-top:1rem;padding:1rem 1.2rem;background:rgba(240,90,40,0.08);
+         border:1px solid rgba(240,90,40,0.25);border-radius:12px;">
+      <div style="font-size:0.85rem;font-weight:700;color:{ORANGE};margin-bottom:6px;">
+        🚀 Packfora's AI Maturity Journey at a Glance
+      </div>
+      <div style="font-size:0.82rem;color:#FFFFFF;line-height:1.8;">
+        Packfora currently scores <b style="color:#FC8181">{overall_now}/10</b> overall AI maturity
+        ({maturity_label(overall_now)}).
+        Executing the 3-phase AI Blueprint will take Packfora to
+        <b style="color:{ORANGE}">{overall_ph3}/10</b> ({maturity_label(overall_ph3)}) by 2028 —
+        a jump of <b>+{round(overall_ph3 - overall_now, 1)} points</b> across all dimensions.
+        The single biggest gap today is in <b>Client-Facing AI</b> and <b>Talent & AI Skills</b> —
+        these are the foundation investments that unlock everything else.
+        Phase 1 alone will move Packfora from {maturity_label(overall_now)} to {maturity_label(overall_ph1)}.
       </div>
     </div>
     """, unsafe_allow_html=True)
